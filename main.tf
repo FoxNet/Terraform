@@ -3,15 +3,15 @@ provider "linode" {
 }
 
 resource "linode_instance" "hashi-masters" {
-    count = 1
-    label = "hashi-master-${format("%02d", count.index + 1)}"
-    image = "linode/gentoo"
-    region = "us-east"
-    type = "g6-standard-1"
-    root_pass = "terr4form-test"
+  count     = 1
+  label     = "hashi-master-${format("%02d", count.index + 1)}"
+  image     = "linode/gentoo"
+  region    = "us-east"
+  type      = "g6-standard-1"
+  root_pass = "terr4form-test"
 
-    group = "hashicorp"
-    tags = [ "hashi-master" ]
-    swap_size = 256
-    private_ip = true
+  group      = "hashicorp"
+  tags       = ["hashi-master"]
+  swap_size  = 256
+  private_ip = true
 }
