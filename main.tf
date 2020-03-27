@@ -1,10 +1,10 @@
 provider "linode" {
-  token = "${var.linode_api_key}"
+  token = var.linode_api_key
 }
 
 resource "linode_instance" "hashi-masters" {
-    for_each = ["01"]
-    label = "hashi-master-${each.value}"
+    count = 1
+    label = "hashi-master-${format("%2d", count.index)}"
     image = "linode/gentoo"
     region = "us-east"
     type = "g6-standard-1"
