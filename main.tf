@@ -1,17 +1,35 @@
-provider "linode" {
-  token = var.linode_api_key
+provider "vault" {}
+
+provider "consul" {}
+
+provider "google" {
+  credentials = file(var.gcp_credentials)
+  project     = var.gcp_project_id
+  version     = "~> 3.0.0"
 }
 
-resource "linode_instance" "hashi-masters" {
-  count     = 1
-  label     = "hashi-master-${format("%02d", count.index + 1)}"
-  image     = "linode/gentoo"
-  region    = "us-east"
-  type      = "g6-standard-1"
-  root_pass = "terr4form-test"
+provider "random" {
+  version = "~> 2.2.0"
+}
 
-  group      = "hashicorp"
-  tags       = ["hashi-master"]
-  swap_size  = 256
-  private_ip = true
+module "core-gcp" {
+  source = "./modules/core/gcp"
+  prefix = var.prefix
+}
+
+module "bootstrap-gcp" {
+  source = "./modules/bootstrap/gcp"
+
+  enable                 = true # Need to make this automatic
+  prefix                 = var.prefix
+  consul_bootstrap_token = var.consul_bootstrap_token
+  vault_service_account  = module.core-gcp.vault_service_account.email
+}
+
+module "hashicorp-common" {
+  source                = "./modules/hashicorp"
+  domain                = var.domain
+  datacenter            = var.datacenter
+  pki_root_ou           = var.organizational_unit
+  pki_root_organization = var.organization
 }
